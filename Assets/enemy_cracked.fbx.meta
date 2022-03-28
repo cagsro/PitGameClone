@@ -3,7 +3,22 @@ guid: 44ec4fe41a4550644a116fe70a7c24a4
 ModelImporter:
   serializedVersion: 20200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: base_mtl
+    second: {fileID: 2100000, guid: 4313cf8bebd73ca4384a7475d94eb35c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: gozdis_mtl
+    second: {fileID: 2100000, guid: b6ac327e7d3d1a945b67567ac2634298, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: kasburun_mtl
+    second: {fileID: 2100000, guid: 1c3e546789336bf45af3cd304413a5e6, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

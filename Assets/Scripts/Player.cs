@@ -5,8 +5,8 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     public CameraShake cameraShake;
-    public Vector3 defaultScale=new Vector3(1f,1f,1f);
-    public Vector3 maxScale = new Vector3(1.25f,0.5f,1.25f);
+    public Vector3 defaultScale=new Vector3(1.5f,1.5f,1.5f);
+    public Vector3 maxScale = new Vector3(2f,0.5f,2f);
     public float lerp=0.03f;
     public bool holdButton;
     public bool onGround=true;
@@ -23,13 +23,14 @@ public class Player : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
+        
     }
 
     // Update is called once per frame
     void Update()
     {
         transform.Translate(Vector3.forward * speed * Time.deltaTime);
+        //rb.velocity = Vector3.forward * speed * Time.deltaTime;
         if (onGround)
         {
             SmashParticle.Stop();
@@ -110,8 +111,9 @@ public class Player : MonoBehaviour
         {
             if (isSmash)
             {
+                CheckCubes();
                 Vector3 pos = this.transform.position;
-                Instantiate(SmokeParticle, pos, Quaternion.identity);
+                Instantiate(SmokeParticle, pos, Quaternion.Euler(-90, 0, 0));
                 StartCoroutine(cameraShake.Shake(.15f, .4f));
                 SmashParticle.Stop();
                 isSmash = false;
@@ -145,5 +147,29 @@ public class Player : MonoBehaviour
     {
         yield return new WaitForSeconds(0.2f);
         onGround = true;
+    }
+    public void CheckCubes()
+    {
+        Collider[] colliders = Physics.OverlapSphere(transform.position, 2.5f);
+        foreach(Collider c in colliders)
+        {
+            if(c.GetComponent<Enemy>())
+            {
+                c.GetComponent<Enemy>().Physics(false);
+                c.GetComponent<BoxCollider>().enabled = false;
+                c.GetComponent<Enemy>().speed = 0;
+
+                Rigidbody[] rb = c.GetComponentsInChildren<Rigidbody>();
+                foreach (Rigidbody childrensRB in rb)
+                {
+                    childrensRB.AddExplosionForce(3000, transform.position+Vector3.down*2, 2.5f);
+                }
+                Collider[] mesh = c.GetComponentsInChildren<MeshCollider>();
+                foreach (MeshCollider childrensMesh in mesh)
+                {
+                    childrensMesh.enabled = false;
+                }
+            }
+        }
     }
 }
