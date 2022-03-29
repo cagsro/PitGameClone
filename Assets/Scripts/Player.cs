@@ -12,27 +12,38 @@ public class Player : MonoBehaviour
     public bool onGround=true;
     public float jumpStake=1;
     public bool isSmash;
-    
 
 
+    public float velocity;
     public float speed = 3f;
+    public float smashSize;
 
     public ParticleSystem SmashParticle;
     public ParticleSystem SmokeParticle;
     public Transform parent;
+
+    public Rigidbody rb;
+
+    public GameObject topBlock;
+    public float dist;
     // Start is called before the first frame update
     void Start()
     {
-        
+        rb = GetComponent<Rigidbody>();
+        isSmash = false;
     }
 
     // Update is called once per frame
     void Update()
     {
         transform.Translate(Vector3.forward * speed * Time.deltaTime);
+        
+
+
         //rb.velocity = Vector3.forward * speed * Time.deltaTime;
         if (onGround)
         {
+            
             SmashParticle.Stop();
             if (Input.GetKeyDown(KeyCode.Space))
             {
@@ -59,7 +70,7 @@ public class Player : MonoBehaviour
                 if (jumpStake >= 1)
                 {
                     //Debug.Log("SpaceUp");
-                    this.GetComponent<Rigidbody>().AddForce(transform.up*100*jumpStake); 
+                    rb.AddForce(transform.up*100*jumpStake); 
                 }
             }
         }
@@ -69,13 +80,26 @@ public class Player : MonoBehaviour
             this.transform.localScale = Vector3.Lerp(this.transform.localScale, defaultScale, lerp * 7);
             if (Input.GetKeyDown(KeyCode.Space))
             {
+                dist = Vector3.Distance(this.transform.position, topBlock.transform.position);
+                Debug.Log("yuseklik" + dist);
+                velocity = rb.velocity.y;
                 SmashParticle.Play();
+                velocity = Mathf.Abs(velocity);
+                SmashSize();
             }
             if (Input.GetKey(KeyCode.Space))
             {
-                isSmash = true;
-                //Debug.Log("Smash");
-                this.GetComponent<Rigidbody>().AddForce(-transform.up*50,ForceMode.Acceleration); 
+                if(smashSize>=0)
+                {
+                    isSmash = true;
+                    //Debug.Log("Smash");
+                    rb.AddForce(-transform.up * 25, ForceMode.Acceleration);
+                }
+                else
+                {
+                    isSmash = false;
+                }
+                
             }
             if (Input.GetKeyUp(KeyCode.Space))
             {
@@ -127,14 +151,19 @@ public class Player : MonoBehaviour
         if (other.transform.tag == "Trampoline")
         {
             //Debug.Log("Trampoline");    
-            this.GetComponent<Rigidbody>().AddForce(transform.up * 1500);
+            rb.AddForce(transform.up * 1500);
             other.gameObject.GetComponent<BoxCollider>().enabled = false;
         }
         if (other.transform.tag == "Enemy")
         {
             if(isSmash)
             {
-                Destroy(other.gameObject);
+                other.GetComponent<Enemy>().Physics(false);
+                //Physics(false);
+                other.GetComponent<BoxCollider>().enabled = false;
+                other.GetComponent<Enemy>().DisabledMesh();
+                other.GetComponent<Enemy>().speed = 0;
+                //Destroy(other.gameObject);
             }
             else
             {
@@ -159,8 +188,8 @@ public class Player : MonoBehaviour
                 c.GetComponent<BoxCollider>().enabled = false;
                 c.GetComponent<Enemy>().speed = 0;
 
-                Rigidbody[] rb = c.GetComponentsInChildren<Rigidbody>();
-                foreach (Rigidbody childrensRB in rb)
+                Rigidbody[] enemyrb = c.GetComponentsInChildren<Rigidbody>();
+                foreach (Rigidbody childrensRB in enemyrb)
                 {
                     childrensRB.AddExplosionForce(3000, transform.position+Vector3.down*2, 2.5f);
                 }
@@ -171,5 +200,10 @@ public class Player : MonoBehaviour
                 }
             }
         }
+    }
+    public void SmashSize()
+    {
+        smashSize = dist;
+
     }
 }

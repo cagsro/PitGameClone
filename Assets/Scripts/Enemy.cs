@@ -72,14 +72,19 @@ public class Enemy : MonoBehaviour
         {
             if(other.GetComponent<Player>().isSmash)
             {
+                other.GetComponent<Player>().smashSize -= 1;
                 Physics(false);
                 this.GetComponent<BoxCollider>().enabled = false;
                 DisabledMesh();
                 speed = 0;
             }
-            else
+            else if(this.transform.tag=="Enemy")
             {
                 Destroy(other.gameObject);
+            }
+            else
+            {
+                return;
             }
         }
     }
