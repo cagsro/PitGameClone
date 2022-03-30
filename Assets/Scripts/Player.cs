@@ -26,6 +26,7 @@ public class Player : MonoBehaviour
 
     public GameObject topBlock;
     public float dist;
+    RaycastHit nesne;
     // Start is called before the first frame update
     void Start()
     {
@@ -38,9 +39,6 @@ public class Player : MonoBehaviour
     {
         transform.Translate(Vector3.forward * speed * Time.deltaTime);
         
-
-
-        //rb.velocity = Vector3.forward * speed * Time.deltaTime;
         if (onGround)
         {
             
@@ -80,16 +78,16 @@ public class Player : MonoBehaviour
             this.transform.localScale = Vector3.Lerp(this.transform.localScale, defaultScale, lerp * 7);
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                dist = Vector3.Distance(this.transform.position, topBlock.transform.position);
+                Raycast();
                 Debug.Log("yuseklik" + dist);
-                velocity = rb.velocity.y;
                 SmashParticle.Play();
-                velocity = Mathf.Abs(velocity);
-                SmashSize();
+                SmashSize();   
             }
             if (Input.GetKey(KeyCode.Space))
             {
-                if(smashSize>=0)
+                velocity = rb.velocity.y;
+                Debug.Log("max velo" + velocity);
+                if (smashSize>=0)
                 {
                     isSmash = true;
                     //Debug.Log("Smash");
@@ -98,8 +96,7 @@ public class Player : MonoBehaviour
                 else
                 {
                     isSmash = false;
-                }
-                
+                }  
             }
             if (Input.GetKeyUp(KeyCode.Space))
             {
@@ -133,8 +130,10 @@ public class Player : MonoBehaviour
     {
         if (other.transform.tag == "Road")
         {
+            
             if (isSmash)
             {
+                
                 CheckCubes();
                 Vector3 pos = this.transform.position;
                 Instantiate(SmokeParticle, pos, Quaternion.Euler(-90, 0, 0));
@@ -170,6 +169,14 @@ public class Player : MonoBehaviour
                 this.transform.position = new Vector3(this.transform.position.x, this.transform.position.y, -41);
             }
         }
+        if (other.transform.tag == "topBlock")
+        {
+            if (isSmash)
+            {
+                /*velocity= rb.velocity.y;
+                Debug.Log("" + velocity);*/
+            }
+        }
     }
 
     public IEnumerator Wait1Second()
@@ -191,7 +198,7 @@ public class Player : MonoBehaviour
                 Rigidbody[] enemyrb = c.GetComponentsInChildren<Rigidbody>();
                 foreach (Rigidbody childrensRB in enemyrb)
                 {
-                    childrensRB.AddExplosionForce(3000, transform.position+Vector3.down*2, 2.5f);
+                    childrensRB.AddExplosionForce(3000, new Vector3(transform.position.x+Random.Range(-2,+2), transform.position.y, transform.position.z + Random.Range(-2, +2)) +Vector3.down*2, 2.5f);
                 }
                 Collider[] mesh = c.GetComponentsInChildren<MeshCollider>();
                 foreach (MeshCollider childrensMesh in mesh)
@@ -203,7 +210,18 @@ public class Player : MonoBehaviour
     }
     public void SmashSize()
     {
-        smashSize = dist;
+        smashSize =Mathf.Floor(dist);
 
+    }
+    public void Raycast()
+    {
+        if(Physics.Raycast(transform.position,-transform.up,out nesne,20.0f))
+        {
+            if (nesne.collider.gameObject.tag == "topBlock")
+            {
+                Debug.Log("En üstteki block" + nesne.collider.gameObject.name);
+                dist = Vector3.Distance(this.transform.position, nesne.collider.gameObject.transform.position);
+            }
+        }
     }
 }

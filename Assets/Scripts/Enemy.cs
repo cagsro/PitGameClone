@@ -77,6 +77,7 @@ public class Enemy : MonoBehaviour
                 this.GetComponent<BoxCollider>().enabled = false;
                 DisabledMesh();
                 speed = 0;
+                //other.GetComponent<Player>().velocity= other.GetComponent<Rigidbody>().velocity.y;
             }
             else if(this.transform.tag=="Enemy")
             {
@@ -94,7 +95,7 @@ public class Enemy : MonoBehaviour
         foreach (Rigidbody childrensPhysics in rb)
         {
             childrensPhysics.isKinematic = value;
-            childrensPhysics.AddExplosionForce(3000, transform.position, 2.5f);
+            childrensPhysics.AddExplosionForce(3000, new Vector3(transform.position.x + Random.Range(-2, +2), transform.position.y, transform.position.z + Random.Range(-2, +2)) + Vector3.down * 2, 2.5f);
             //childrensPhysics.useGravity = value;
         }
     }
