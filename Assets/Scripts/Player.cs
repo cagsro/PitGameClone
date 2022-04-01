@@ -27,18 +27,30 @@ public class Player : MonoBehaviour
     public GameObject topBlock;
     public float dist;
     RaycastHit nesne;
+
+    //Follow
+    public GameObject BodyPrefab;
+    public List<GameObject> BodyParts = new List<GameObject>();
+    public List<Vector3> PositionHistory = new List<Vector3>();
+    public int Gap = 10;
+    public float BodySpeed = 10;
+    //Follow
+
+
     // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         isSmash = false;
+        AddBody();
+        AddBody();
     }
 
     // Update is called once per frame
     void Update()
     {
         transform.Translate(Vector3.forward * speed * Time.deltaTime);
-        
+
         if (onGround)
         {
             
@@ -104,7 +116,30 @@ public class Player : MonoBehaviour
                 SmashParticle.Stop();
             }
         }
+        //Follow
+        PositionHistory.Insert(0, transform.position);
+        int index = 0;
+        foreach (var body in BodyParts)
+        {
+            Vector3 point = PositionHistory[Mathf.Min(index * Gap, PositionHistory.Count - 1)];
+            Vector3 moveDirection = point - body.transform.position;
+            body.transform.position += moveDirection * BodySpeed * Time.deltaTime;
+            body.transform.LookAt(point);
+            index++;
+        }
+        if(PositionHistory.Count>300)
+        { 
+            PositionHistory.Clear(); 
+        }
+        //Follow
     }
+    //Follow
+    public void AddBody()
+    {
+        GameObject body = Instantiate(BodyPrefab,new Vector3(20f,3.75f,-42f),Quaternion.identity);
+        BodyParts.Add(body);
+    }
+    //Follow
 
     public IEnumerator StakeJump()
     {
@@ -153,10 +188,17 @@ public class Player : MonoBehaviour
             rb.AddForce(transform.up * 1500);
             other.gameObject.GetComponent<BoxCollider>().enabled = false;
         }
+        if (other.transform.tag == "Trampoline2")
+        {
+            //Debug.Log("Trampoline");    
+            rb.AddForce(transform.up * 2000);
+            other.gameObject.GetComponent<BoxCollider>().enabled = false;
+        }
         if (other.transform.tag == "Enemy")
         {
             if(isSmash)
             {
+                StartCoroutine(cameraShake.Shake(.15f, .4f));
                 other.GetComponent<Enemy>().Physics(false);
                 //Physics(false);
                 other.GetComponent<BoxCollider>().enabled = false;

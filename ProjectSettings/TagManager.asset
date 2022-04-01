@@ -9,6 +9,7 @@ TagManager:
   - Trampoline
   - Enemy
   - topBlock
+  - Trampoline2
   layers:
   - Default
   - TransparentFX
