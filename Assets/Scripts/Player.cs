@@ -4,10 +4,13 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    public List<GameObject> BodyParts = new List<GameObject>();
+
+
     public CameraShake cameraShake;
     public Vector3 defaultScale=new Vector3(1.5f,1.5f,1.5f);
     public Vector3 maxScale = new Vector3(2f,0.5f,2f);
-    public float lerp=0.03f;
+    public float lerp=0.02f;
     public bool holdButton;
     public bool onGround=true;
     public float jumpStake=1;
@@ -28,13 +31,13 @@ public class Player : MonoBehaviour
     public float dist;
     RaycastHit nesne;
 
-    //Follow
+    /*//Follow
     public GameObject BodyPrefab;
     public List<GameObject> BodyParts = new List<GameObject>();
     public List<Vector3> PositionHistory = new List<Vector3>();
     public int Gap = 10;
     public float BodySpeed = 10;
-    //Follow
+    //Follow*/
 
 
     // Start is called before the first frame update
@@ -42,8 +45,10 @@ public class Player : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         isSmash = false;
+        /*AddBody();
         AddBody();
         AddBody();
+        AddBody();*/
     }
 
     // Update is called once per frame
@@ -80,7 +85,7 @@ public class Player : MonoBehaviour
                 if (jumpStake >= 1)
                 {
                     //Debug.Log("SpaceUp");
-                    rb.AddForce(transform.up*100*jumpStake); 
+                    rb.AddForce(transform.up*100*jumpStake);
                 }
             }
         }
@@ -116,7 +121,7 @@ public class Player : MonoBehaviour
                 SmashParticle.Stop();
             }
         }
-        //Follow
+        /*//Follow
         PositionHistory.Insert(0, transform.position);
         int index = 0;
         foreach (var body in BodyParts)
@@ -127,19 +132,19 @@ public class Player : MonoBehaviour
             body.transform.LookAt(point);
             index++;
         }
-        if(PositionHistory.Count>300)
+        if(PositionHistory.Count>1000)
         { 
             PositionHistory.Clear(); 
         }
-        //Follow
+        //Follow*/
     }
-    //Follow
+    /*//Follow
     public void AddBody()
     {
         GameObject body = Instantiate(BodyPrefab,new Vector3(20f,3.75f,-42f),Quaternion.identity);
         BodyParts.Add(body);
     }
-    //Follow
+    //Follow*/
 
     public IEnumerator StakeJump()
     {
