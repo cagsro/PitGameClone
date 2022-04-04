@@ -9,6 +9,7 @@ public class Enemy : MonoBehaviour
     public bool repeatable;
     public float speed = 2f;
     public float duration = 5f;
+    public float health = 5f;
     IEnumerator Start()
     {
         minScale = transform.localScale;
@@ -70,23 +71,40 @@ public class Enemy : MonoBehaviour
     {
         if (other.transform.tag=="Player")
         {
-            if(other.GetComponent<Player>().isSmash)
+            if(other.GetComponent<Player>())
             {
-                other.GetComponent<Player>().smashSize -= 1;
-                Physics(false);
-                this.GetComponent<BoxCollider>().enabled = false;
-                DisabledMesh();
-                speed = 0;
-                //other.GetComponent<Player>().velocity= other.GetComponent<Rigidbody>().velocity.y;
-            }
-            else if(this.transform.tag=="Enemy")
-            {
-                Destroy(other.gameObject);
+                if (other.GetComponent<Player>().isSmash)
+                {
+                    other.GetComponent<Player>().smashSize -= 1;
+                    health--;
+                    //Physics(false);
+                    // this.GetComponent<BoxCollider>().enabled = false;
+                    //DisabledMesh();
+                    //speed = 0;
+                    //other.GetComponent<Player>().velocity= other.GetComponent<Rigidbody>().velocity.y;
+                    if (health <= 0)
+                    {
+                        Crash();
+                    }
+                }
+                else if (this.transform.tag == "Enemy")
+                {
+                    //Destroy(other.gameObject);
+                }
+                else
+                {
+                    return;
+                }
             }
             else
             {
-                return;
+                other.gameObject.GetComponent<MeshRenderer>().enabled = false;
+                if (health <= 0)
+                {
+                    Crash();
+                }
             }
+            
         }
     }
     public void Physics(bool value)
@@ -107,4 +125,14 @@ public class Enemy : MonoBehaviour
             childrensMesh.enabled = false;
         }
     }
+    public void Crash()
+    {
+        
+        Physics(false);
+        this.GetComponent<BoxCollider>().enabled = false;
+        DisabledMesh();
+        speed = 0;
+        ParentMoving.instance.speed = 9;
+    }
+
 }

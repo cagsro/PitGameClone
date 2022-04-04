@@ -8,6 +8,7 @@ public class Deneme : MonoBehaviour
     public List<GameObject> BodyParts = new List<GameObject>();
     public List<Vector3> PositionHistory = new List<Vector3>();
     public int Gap = 10;
+    public int index;
     public float BodySpeed = 10;
     // Start is called before the first frame update
     void Start()
@@ -28,7 +29,7 @@ public class Deneme : MonoBehaviour
 
         //Follow
         PositionHistory.Insert(0, transform.position);
-        int index = 0;
+        index = 0;
         foreach (var body in BodyParts)
         {
             Vector3 point = PositionHistory[Mathf.Min(index * Gap, PositionHistory.Count - 1)];

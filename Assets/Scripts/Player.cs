@@ -54,7 +54,7 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        transform.Translate(Vector3.forward * speed * Time.deltaTime);
+        //transform.Translate(Vector3.forward * speed * Time.deltaTime);
 
         if (onGround)
         {
@@ -96,14 +96,14 @@ public class Player : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 Raycast();
-                Debug.Log("yuseklik" + dist);
+                //Debug.Log("yuseklik" + dist);
                 SmashParticle.Play();
                 SmashSize();   
             }
             if (Input.GetKey(KeyCode.Space))
             {
                 velocity = rb.velocity.y;
-                Debug.Log("max velo" + velocity);
+                //Debug.Log("max velo" + velocity);
                 if (smashSize>=0)
                 {
                     isSmash = true;
@@ -220,8 +220,9 @@ public class Player : MonoBehaviour
         {
             if (isSmash)
             {
-                /*velocity= rb.velocity.y;
-                Debug.Log("" + velocity);*/
+                this.gameObject.GetComponent<MeshRenderer>().enabled = false;
+                ParentMoving.instance.speed = 0;
+                other.GetComponent<Enemy>().health--;
             }
         }
     }

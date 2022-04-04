@@ -4,38 +4,70 @@ using UnityEngine;
 
 public class StakedBody : MonoBehaviour
 {
-    public int myOrder;
-    public Transform head;
+    public Vector3 defaultScale = new Vector3(1.5f, 1.5f, 1.5f);
+    public Vector3 maxScale = new Vector3(2f, 0.5f, 2f);
+    public float lerp = 0.02f;
+    public bool holdButton;
+    public bool onGround;
 
     // Start is called before the first frame update
     void Start()
     {
-        head = GameObject.FindGameObjectWithTag("Player").gameObject.transform;
-        for(int i=0;i<head.GetComponent<Player>().BodyParts.Count;i++)
-        {
-            if(gameObject==head.GetComponent<Player>().BodyParts[i].gameObject)
-            {
-                myOrder = i;
-            }
-        }
+
     }
-    private Vector3 movementVelocity;
-    [Range(0.0f, 1.0f)]
-    public float overTime = 0.5f;
     // Update is called once per frame
-    void FixedUpdate()
+    void Update()
     {
-        if (myOrder == 0)
+        /*if (onGround)
         {
-            transform.position = Vector3.SmoothDamp(transform.position, head.position, ref movementVelocity, overTime);
-            transform.LookAt(head.transform.position);
+
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                holdButton = false;
+            }
+            if (Input.GetKey(KeyCode.Space))
+            {
+                if (!holdButton)
+                {
+                    //Debug.Log("SpaceDown");
+                    holdButton = true;
+                }
+                //Debug.Log("SpaceHoldDown");
+                this.transform.localScale = Vector3.Lerp(this.transform.localScale, maxScale, lerp);
+            }
+            if (Input.GetKeyUp(KeyCode.Space))
+            {
+                //Debug.Log("KeyUp");
+                holdButton = false;
+            }
         }
         else
         {
-            transform.position = Vector3.SmoothDamp(transform.position, head.GetComponent<Player>().BodyParts[myOrder - 1].transform.position, ref movementVelocity, overTime);
-            transform.LookAt(head.transform.position);
+            this.transform.localScale = Vector3.Lerp(this.transform.localScale, defaultScale, lerp * 7);
+        }*/
+    }
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.transform.tag == "Road")
+        {
+            onGround = false;
         }
     }
-    
-
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.transform.tag == "topBlock")
+        {
+            Debug.Log("HealthPAarent");
+            other.GetComponent<Enemy>().health--;
+        }
+        if (other.transform.tag == "Road")
+        {
+            StartCoroutine(Wait1Second());
+        }
+    }
+    public IEnumerator Wait1Second()
+    {
+        yield return new WaitForSeconds(0.2f);
+        onGround = true;
+    }
 }
